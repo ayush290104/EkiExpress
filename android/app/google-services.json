@@ -1,0 +1,126 @@
+{
+  "project_info": {
+    "project_number": "586680111067",
+    "project_id": "eki-express-74357",
+    "storage_bucket": "eki-express-74357.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:586680111067:android:09cdc7c279444a1c64e1fe",
+        "android_client_info": {
+          "package_name": "com.ekiexpress"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "586680111067-e9jmpjsp21h6b08jru1ofrbqnimfiak2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ekiexpress",
+            "certificate_hash": "f5d47469680e09d66b4393ed25bc557d91b9fd14"
+          }
+        },
+        {
+          "client_id": "586680111067-0gd0dao7vtji2asliqsa1anno508umep.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBzqqP2DD8NQnkhjkYV98VVwnE-5Nk1yes"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "586680111067-0gd0dao7vtji2asliqsa1anno508umep.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "586680111067-8cvr2n3putm33812lu5ifvin8j8473fn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.sixamtech.6amMart"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:586680111067:android:5071309c1f5ce05b64e1fe",
+        "android_client_info": {
+          "package_name": "com.sixamtech.sixam_mart_delivery_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "586680111067-0gd0dao7vtji2asliqsa1anno508umep.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBzqqP2DD8NQnkhjkYV98VVwnE-5Nk1yes"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "586680111067-0gd0dao7vtji2asliqsa1anno508umep.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "586680111067-8cvr2n3putm33812lu5ifvin8j8473fn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.sixamtech.6amMart"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:586680111067:android:1cc01f5fcea428d864e1fe",
+        "android_client_info": {
+          "package_name": "com.sixamtech.sixam_mart_store_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "586680111067-0gd0dao7vtji2asliqsa1anno508umep.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBzqqP2DD8NQnkhjkYV98VVwnE-5Nk1yes"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "586680111067-0gd0dao7vtji2asliqsa1anno508umep.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "586680111067-8cvr2n3putm33812lu5ifvin8j8473fn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.sixamtech.6amMart"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

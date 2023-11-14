@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base href="/">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="A Multi-vendor Food. Grocery, eCommerce, Pharmacy & Parcel service.">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="StackFood">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png" />
+
+  <meta name="google-signin-client_id"
+    content="586680111067-0gd0dao7vtji2asliqsa1anno508umep.apps.googleusercontent.com">
+
+  <script type="text/javascript"
+    src="https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js"></script>
+
+  <title>
+    Ekiexpress
+  </title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+  <!-- This script installs service_worker.js to provide PWA functionality to
+       application. For more information, see:
+       https://developers.google.com/web/fundamentals/primers/service-workers -->
+
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA3gIAKHb_pf4xVN9A9VKOfU0M-dL70zMA"></script>
+  <!--  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>-->
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.register("/firebase-messaging-sw.js");
+      });
+      window.addEventListener('flutter-first-frame', function () {
+        navigator.serviceWorker.register('flutter_service_worker.js');
+      });
+    }
+  </script>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
+
+  <div class="center">
+    <img src="logo.png" alt="logo" width="300px" />
+    <br>
+    <div class="loader" style="width:300px;text-align: center;">
+      <div class="continuous-4"></div>
+    </div>
+  </div>
+
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyA5z2MaEB785J978fJXnEhnMWAMBqIF8pU",
+      authDomain: "eki-express-74357.firebaseapp.com",
+      projectId: "eki-express-74357",
+      storageBucket: "eki-express-74357.appspot.com",
+      messagingSenderId: "586680111067",
+      appId: "1:586680111067:web:614197c9e24a369f64e1fe",
+      measurementId: "G-SC7Z2DNYSP"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+  </script>
+
+  <script src="main.dart.js?version=2.1.0" type="application/javascript"></script>
+</body>
+
+</html>
