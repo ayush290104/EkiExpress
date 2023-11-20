@@ -188,19 +188,20 @@ class SearchController extends GetxController implements GetxService {
   }
 
   void searchData(String query, bool fromHome) async {
+    debugPrint("came here");
     if((_isStore && query.isNotEmpty && query != _storeResultText) || (!_isStore && query.isNotEmpty && (query != _itemResultText || fromHome))) {
       _searchHomeText = query;
       _searchText = query;
       _rating = -1;
       _upperValue = 0;
       _lowerValue = 0;
-      if (_isStore) {
-        _searchStoreList = null;
-        _allStoreList = null;
-      } else {
-        _searchItemList = null;
-        _allItemList = null;
-      }
+      // if (_isStore) {
+      //   _searchStoreList = null;
+      //   _allStoreList = null;
+      // } else {
+      //   _searchItemList = null;
+      //   _allItemList = null;
+      // }
       if (!_historyList.contains(query)) {
         _historyList.insert(0, query);
       }
@@ -226,16 +227,22 @@ class SearchController extends GetxController implements GetxService {
             _searchStoreList.addAll(StoreModel.fromJson(response.body).stores);
             _allStoreList.addAll(StoreModel.fromJson(response.body).stores);
           } else {
+
             _itemResultText = query;
             _searchItemList = [];
             _allItemList = [];
             _searchItemList.addAll(ItemModel.fromJson(response.body).items);
+            debugPrint("came here response8765 ${_searchItemList.toString()}");
             _allItemList.addAll(ItemModel.fromJson(response.body).items);
+            debugPrint("all item list is ${_allItemList.length}");
           }
+
         }
       } else {
+        debugPrint("came here response4578");
         ApiChecker.checkApi(response);
       }
+      debugPrint("came here response ${response.body}");
     } else {
       _searchHomeText = "";
       _searchText = "";

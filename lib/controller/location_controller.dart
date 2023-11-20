@@ -298,6 +298,7 @@ class LocationController extends GetxController implements GetxService {
   }
 
   AddressModel getUserAddress() {
+     debugPrint("I am called");
     AddressModel _addressModel;
     try {
       _addressModel = AddressModel.fromJson(jsonDecode(locationRepo.getUserAddress()));

@@ -2,6 +2,6 @@
 <resources>
     <string name="app_name">Ekiexpress</string>
     <string name="facebook_app_id">336219982350210</string>
-    <string name="fb_login_protocol_scheme">336219982350210</string>
+    <string name="fb_login_protocol_scheme">fb336219982350210</string>
     <string name="facebook_client_token">6d3015166a6cfb5f19556ef37f3a9549</string>
 </resources>
