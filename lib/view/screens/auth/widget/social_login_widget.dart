@@ -14,6 +14,8 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '../../../../helper/responsive_helper.dart';
+
 const List<String> scopes = <String>[
   'email',
   'https://www.googleapis.com/auth/contacts.readonly',
@@ -39,33 +41,34 @@ class _SocialLoginWidgetState extends State<SocialLoginWidget> {
   void initState() {
     super.initState();
 
-    _googleSignIn.onCurrentUserChanged
-        .listen((GoogleSignInAccount account) async {
-      // In mobile, being authenticated means being authorized...
-      bool isAuthorized = account != null;
-      // However, in the web...
-      if (kIsWeb && account != null) {
-        isAuthorized = await _googleSignIn.canAccessScopes(scopes);
-      }
 
-      setState(() {
-        _currentUser = account;
-        _isAuthorized = isAuthorized;
-      });
-
-      // Now that we know that the user can access the required scopes, the app
-      // can call the REST API.
-      // if (isAuthorized) {
-      //   unawaited(_handleGetContact(account!));
-      // }
-    });
-
-    // In the web, _googleSignIn.signInSilently() triggers the One Tap UX.
+    // _googleSignIn.onCurrentUserChanged
+    //     .liten((GoogleSignInAccount account) async {
+    //   // In mobile, being authenticated means being authorized...
+    //   bool isAuthorized = account != null;
+    //   // However, in the web...
+    //   if (kIsWeb && account != null) {
+    //     isAuthorized = await _googleSignIn.canAccessScopes(scopes);
+    //   }
     //
-    // It is recommended by Google Identity Services to render both the One Tap UX
-    // and the Google Sign In button together to "reduce friction and improve
-    // sign-in rates" ([docs](https://developers.google.com/identity/gsi/web/guides/display-button#html)).
-    _googleSignIn.signInSilently();
+    //   setState(() {
+    //     _currentUser = account;
+    //     _isAuthorized = isAuthorized;
+    //   });
+    //
+    //   // Now that we know that the user can access the required scopes, the app
+    //   // can call the REST API.
+    //   // if (isAuthorized) {
+    //   //   unawaited(_handleGetContact(account!));
+    //   // }
+    // });
+    //
+    // // In the web, _googleSignIn.signInSilently() triggers the One Tap UX.
+    // //
+    // // It is recommended by Google Identity Services to render both the One Tap UX
+    // // and the Google Sign In button together to "reduce friction and improve
+    // // sign-in rates" ([docs](https://developers.google.com/identity/gsi/web/guides/display-button#html)).
+    // _googleSignIn.signInSilently();
   }
 
   @override
@@ -169,6 +172,7 @@ class _SocialLoginWidgetState extends State<SocialLoginWidget> {
                       onTap: () async {
                         LoginResult _result =
                             await FacebookAuth.instance.login();
+                        debugPrint("Still");
                         if (_result.status == LoginStatus.success) {
                           Map _userData =
                               await FacebookAuth.instance.getUserData();

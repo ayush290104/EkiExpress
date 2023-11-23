@@ -57,7 +57,7 @@ Future<void> main() async {
   } catch (e) {}
 
   if (ResponsiveHelper.isWeb()) {
-    debugPrint("i got initialised");
+
     await FacebookAuth.instance.webAndDesktopInitialize(
       appId: "336219982350210",
       cookie: true,

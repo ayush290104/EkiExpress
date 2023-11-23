@@ -3,8 +3,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:icons_plus/icons_plus.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
+
 import 'package:share/share.dart';
 import 'package:share_plus/share_plus.dart' as share_plus;
 import 'package:share_whatsapp/share_whatsapp.dart';
@@ -38,6 +40,7 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -233,14 +236,29 @@ class _CartScreenState extends State<CartScreen> {
                                                       });
 
                                                     if (GetPlatform.isWeb) {
-                                                      shareImage(
-                                                          List.generate(
-                                                              cartController
-                                                                  .cartList
-                                                                  .length,
-                                                              (index) =>
-                                                                  "${Get.find<SplashController>().configModel.baseUrls.itemImageUrl}/${cartController.cartList[index].item.image}"),
-                                                          messageToSend);
+                                                     _showShareDialog(context, messageToSend,'${Get.find<SplashController>().configModel.baseUrls.itemImageUrl}/${cartController.cartList[0].item.image}');
+                                                      //share_plus.Share.shareWithResult(messageToSend);
+                                                      // await getAllFiles(cartController.cartList)
+                                                      //     .then((files) async {
+                                                      //
+                                                      //   if(files!=null){
+                                                      //     share_plus.Share.shareXFiles(files, text: messageToSend);
+                                                      //   }
+                                                      //
+                                                      //   else{
+                                                      //
+                                                      //   }
+                                                      //   // else
+                                                      //   //   await Share.shareFiles(files,
+                                                      //   //       text: messageToSend);
+                                                      // });
+
+                                                      // shareImage(
+                                                      //     List.generate(
+                                                      //         cartController.cartList.length,
+                                                      //         (index) =>
+                                                      //             "${Get.find<SplashController>().configModel.baseUrls.itemImageUrl}/${cartController.cartList[index].item.image}"),
+                                                      //     messageToSend);
                                                     }
                                                   },
                                                 ),
@@ -284,19 +302,44 @@ class _CartScreenState extends State<CartScreen> {
                                       GetPlatform.isIOS)
                                     await getAllFiles(cartController.cartList)
                                         .then((files) async {
-                                      await Share.share(messageToSend);
-                                      // else
-                                      //   await Share.shareFiles(files,
-                                      //       text: messageToSend);
+                                          if(files!=null){
+                                            String s = "";
+                                            cartController.cartList.forEach((element) {s += '${Get.find<SplashController>().configModel.baseUrls.itemImageUrl}/${element.item.image}\n'; });
+                                            messageToSend = s + messageToSend;
+                                            messageToSend = ""+messageToSend;
+                                            share_plus.Share.shareXFiles([files[0]], text: messageToSend);
+                                          }
+
+                                      else{
+                                            Share.share(messageToSend);
+                                          }
+
                                     });
 
-                                  if (GetPlatform.isWeb) {
-                                    shareImage(
-                                        List.generate(
-                                            cartController.cartList.length,
-                                            (index) =>
-                                                "${Get.find<SplashController>().configModel.baseUrls.itemImageUrl}/${cartController.cartList[index].item.image}"),
-                                        messageToSend);
+                                  if (GetPlatform.isWeb){
+          _showShareDialog(context, messageToSend,'${Get.find<SplashController>().configModel.baseUrls.itemImageUrl}/${cartController.cartList[0].item.image}');
+
+          // await getAllFiles(cartController.cartList)
+                                    //     .then((files) async {
+                                    //
+                                    //   if(files!=null){
+                                    //     share_plus.Share.shareXFiles(files, text: messageToSend);
+                                    //   }
+                                    //
+                                    //   else{
+                                    //     share_plus.Share.shareWithResult(messageToSend);
+                                    //   }
+                                    //   // else
+                                    //   //   await Share.shareFiles(files,
+                                    //   //       text: messageToSend);
+                                    // });
+
+                                    // shareImage(
+                                    //     List.generate(
+                                    //         cartController.cartList.length,
+                                    //         (index) =>
+                                    //             "${Get.find<SplashController>().configModel.baseUrls.itemImageUrl}/${cartController.cartList[index].item.image}"),
+                                    //     messageToSend);
                                   }
                                 },
                               ),
@@ -313,7 +356,7 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 
-  Future<String> downloadFile(String url, String name) async {
+  Future<share_plus.XFile> downloadFile(String url, String name) async {
     try {
       final response = await http.get(Uri.parse(url));
 
@@ -323,7 +366,7 @@ class _CartScreenState extends State<CartScreen> {
             '$name.png'; // Set the desired file name and extension.
         final file = File('${appDir.path}/$filename');
         await file.writeAsBytes(response.bodyBytes);
-        return file.path;
+        return XFile(file.path);
       } else {
         print('Failed to download file. Status code: ${response.statusCode}');
         return null;
@@ -344,12 +387,12 @@ class _CartScreenState extends State<CartScreen> {
     launchUrl(Uri.parse("whatsapp://send?text=" + imagesString));
   }
 
-  Future<List<String>> getAllFiles(List<CartModel> cartList) async {
-    List<String> files = [];
+  Future<List<XFile>> getAllFiles(List<CartModel> cartList) async {
+    List<XFile> files = [];
 
     try {
       for (var element in cartList) {
-        String file = await downloadFile(
+        XFile file = await downloadFile(
             '${Get.find<SplashController>().configModel.baseUrls.itemImageUrl}/${element.item.image}',
             element.item.name);
         files.add(file);
@@ -359,6 +402,114 @@ class _CartScreenState extends State<CartScreen> {
     }
 
     return files;
+  }
+}
+
+Future<void> _showShareDialog(BuildContext context,String Texttoshare,String ImageUrl) async {
+  String selectedShareOption = await showDialog<String>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Share Via'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildShareOption(context, 'Whatsapp'),
+            _buildShareOption(context, 'Facebook'),
+            _buildShareOption(context, 'Email'),
+            _buildShareOption(context, 'Twitter'),
+          ],
+        ),
+      );
+    },
+  );
+
+  if (selectedShareOption != null) {
+    await _handleShareOption(selectedShareOption,Texttoshare,ImageUrl);
+  }
+}
+Widget _buildShareOption(BuildContext context, String option) {
+  return ListTile(
+    leading: option=='Facebook'?Logo(Logos.facebook_logo):option=='Email'?Logo(Logos.gmail):option=='Whatsapp'?Logo(Logos.whatsapp):Logo(Logos.twitter),
+    title: Text(option),
+    onTap: () {
+      Navigator.of(context).pop(option);
+    },
+    dense: true,
+  );
+}
+Future<void> _handleShareOption(String selectedOption,String textToShare,String imageUrl) async {
+  String shareUrl = '';
+  switch (selectedOption){
+    case 'Whatsapp':
+      final encodedText = Uri.encodeFull(textToShare);
+      shareUrl = 'https://wa.me/?text=$encodedText';
+      break;
+    case 'Facebook':
+    // Facebook sharing logic
+      final facebookBaseUrl = 'https://www.facebook.com/sharer/sharer.php';
+      final encodedUrl = Uri.encodeFull(imageUrl); // Replace imageUrl with the image you want to share
+
+      // URL parameters for the Facebook sharing dialog
+      final params = {
+        'u': encodedUrl,
+        'quote': "Look what i found out this recipe",
+        'app_id': '336219982350210'
+      };
+
+      final queryString = Uri(queryParameters: params).query;
+      shareUrl = '$facebookBaseUrl?$queryString';
+      break;
+  // Handle other cases (Email, Twitter) similarly
+  // ...
+    case 'Email':
+      String TexttoShare = textToShare.length<700 ?textToShare:textToShare.substring(0,700);
+      final emailBaseUrl = 'mailto:?';
+      final encodedSubject = Uri.encodeFull('Shared from My App').replaceAll('%20',' '); // Customize subject as needed
+      final encodedBody = Uri.encodeFull(textToShare).replaceAll('%20',' '); // Customize body as needed
+
+      // URL parameters for the Email sharing
+      final params = {
+        'subject': 'Look What I Found Out',
+        'body': TexttoShare + "Visit ",
+
+        // Other optional parameters: cc, bcc, etc.
+      };
+
+      final queryString = Uri(queryParameters: params).query;
+      shareUrl = '$emailBaseUrl$queryString';
+      break;
+    case 'Twitter':
+
+      final twitterBaseUrl = 'https://twitter.com/intent/tweet';
+      final encodedText = Uri.encodeFull(textToShare); // Customize as needed
+
+      // URL parameters for the Twitter sharing
+      final params = {
+        'text': "Look at my cart from EkiExpress \n\n Visit \n https://ekiexpress.com\n\n",
+        'via':'EkiExpress',
+        'hashtags': "EkiExpress",
+        'url' : imageUrl,
+
+        // Other optional parameters: via, hashtags, etc.
+      };
+
+      final queryString = Uri(queryParameters: params).query;
+      shareUrl = '$twitterBaseUrl?$queryString';
+      break;
+
+    default:
+      break;
+  }
+
+  if (shareUrl.isNotEmpty) {
+    debugPrint(shareUrl);
+    if (await canLaunch(shareUrl)) {
+      await launch(shareUrl);
+    } else {
+      throw 'Could not launch $shareUrl';
+    }
   }
 }
 

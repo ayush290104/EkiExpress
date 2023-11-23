@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:icons_plus/icons_plus.dart';
+import 'package:image_compression_flutter/image_compression_flutter.dart';
+import 'package:share/share.dart';
 import 'package:sixam_mart/controller/auth_controller.dart';
 import 'package:sixam_mart/controller/item_controller.dart';
 import 'package:sixam_mart/controller/wishlist_controller.dart';
@@ -12,7 +15,6 @@ import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
-import 'package:share/share.dart';
 import 'package:sixam_mart/controller/cart_controller.dart';
 import 'package:sixam_mart/controller/category_controller.dart';
 import 'package:sixam_mart/controller/localization_controller.dart';
@@ -20,7 +22,8 @@ import 'package:sixam_mart/controller/splash_controller.dart';
 import 'package:sixam_mart/controller/store_controller.dart';
 import 'package:sixam_mart/data/model/response/category_model.dart';
 import 'package:sixam_mart/data/model/response/item_model.dart';
-import 'package:sixam_mart/data/model/response/store_model.dart';import 'package:share_plus/share_plus.dart' as share_plus;
+import 'package:sixam_mart/data/model/response/store_model.dart';
+import 'package:share_plus/share_plus.dart' as share_plus;
 
 import 'package:sixam_mart/helper/date_converter.dart';
 import 'package:sixam_mart/helper/price_converter.dart';
@@ -44,6 +47,7 @@ import 'package:sixam_mart/util/styles.dart';
 import 'package:sixam_mart/view/base/custom_snackbar.dart';import 'package:http/http.dart' as http;
 
 import 'package:sixam_mart/view/base/rating_bar.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ItemTitleView extends StatelessWidget {
   final Item item;
@@ -55,7 +59,7 @@ class ItemTitleView extends StatelessWidget {
       this.inStorePage = false,
       this.isCampaign = false,
       @required this.inStock});
-  Future<String> downloadFile(String url, String name) async {
+  Future<XFile> downloadFile(String url, String name) async {
     try {
       final response = await http.get(Uri.parse(url));
 
@@ -65,7 +69,7 @@ class ItemTitleView extends StatelessWidget {
             '$name.png'; // Set the desired file name and extension.
         final file = File('${appDir.path}/$filename');
         await file.writeAsBytes(response.bodyBytes);
-        return file.path;
+        return XFile(file.path);
       } else {
         print('Failed to download file. Status code: ${response.statusCode}');
         return null;
@@ -189,6 +193,12 @@ class ItemTitleView extends StatelessWidget {
             padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
             child: GetBuilder<ItemController>(
               builder: (itemController) {
+                List<String> _imageList = [];
+                _imageList.add(itemController.item.image);
+                _imageList.addAll(itemController.item.images);
+
+                String _baseUrl = itemController.item.availableDateStarts == null ? Get.find<SplashController>().
+                configModel.baseUrls.itemImageUrl : Get.find<SplashController>().configModel.baseUrls.campaignImageUrl;
                 return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -247,28 +257,41 @@ class ItemTitleView extends StatelessWidget {
                                   messageToSend =
                                       "Look what I found out.\n\n${item.name}\n\n${item.description}\n\n  https://ekiexpress.com/item-details?id=${item.id}&page=item";
 
-                                  if(GetPlatform.isAndroid || GetPlatform.isIOS)               {
-                                    await downloadFile("${Get.find<SplashController>().configModel.baseUrls.categoryImageUrl}/" +item.image,
-                                        item.name)
-                                        .then((value) {
-                                      if (value !=
-                                          null)
-                                        Share.shareFiles([
-                                          value
-                                        ], text: messageToSend);
-                                      else
-                                        Share.share(messageToSend);
-                                    });
+                                  if(GetPlatform.isAndroid || GetPlatform.isIOS&&!GetPlatform.isWeb)
+                                  {
+                                    if(GetPlatform.isWeb){
+                                      _showShareDialog(context, messageToSend, "$_baseUrl/${_imageList[itemController.productSelect]}",item.name);
+                                    }
+                                    else{
+                                      await downloadFile(
+                                              "$_baseUrl/${_imageList[itemController.productSelect]}",
+                                              item.name)
+                                          .then((value) {
+                                        if (value != null)
+                                          share_plus.Share.shareXFiles([value],
+                                              text: messageToSend);
+                                        else
+                                          Share.share(messageToSend);
+                                      });
+                                    }
                                   }
                                   else if(GetPlatform.isWeb){
-                                    shareImage(
-                                        ["${Get.find<SplashController>().configModel.baseUrls.categoryImageUrl}/" + item.image],
-                                        messageToSend);
+                                    _showShareDialog(context, messageToSend, "$_baseUrl/${_imageList[itemController.productSelect]}",item.name);
+
+                                    // await downloadFile("$_baseUrl/${_imageList[itemController.productSelect]}",
+                                    //     item.name)
+                                    //     .then((value) {
+                                    //   if (value !=
+                                    //       null)
+                                    //     share_plus.Share.shareXFiles([value], text: messageToSend);
+                                    //   else
+                                    //     share_plus.Share.shareWithResult(messageToSend);
+                                    // });
                                   }
                                 },
                                 child: Icon(
                                     Icons
-                                        .share),
+                                        .share,color: Colors.green),
                               ),
                             ],
                           );
@@ -365,4 +388,113 @@ class ItemTitleView extends StatelessWidget {
             ),
           );
   }
+  Future<void> _showShareDialog(BuildContext context,String Texttoshare,String ImageUrl,String name) async {
+    String selectedShareOption = await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Share Via'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildShareOption(context, 'Whatsapp'),
+              _buildShareOption(context, 'Facebook'),
+              _buildShareOption(context, 'Email'),
+              _buildShareOption(context, 'Twitter'),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (selectedShareOption != null) {
+      await _handleShareOption(selectedShareOption,Texttoshare,ImageUrl,name);
+    }
+  }
+  Widget _buildShareOption(BuildContext context, String option) {
+    return ListTile(
+      leading: option=='Facebook'?Logo(Logos.facebook_logo):option=='Email'?Logo(Logos.gmail):option=='Whatsapp'?Logo(Logos.whatsapp):Logo(Logos.twitter),
+      title: Text(option),
+      onTap: () {
+        Navigator.of(context).pop(option);
+      },
+      dense: true,
+    );
+  }
+  Future<void> _handleShareOption(String selectedOption,String textToShare,String imageUrl,String name) async {
+    String shareUrl = '';
+    switch (selectedOption){
+      case 'Whatsapp':
+        String Textfinal = imageUrl+"\n\n $textToShare";
+        final encodedText = Uri.encodeFull(Textfinal);
+        shareUrl = 'https://wa.me/?text=$encodedText';
+        break;
+      case 'Facebook':
+      // Facebook sharing logic
+        final facebookBaseUrl = 'https://www.facebook.com/sharer/sharer.php';
+        final encodedUrl = Uri.encodeFull(imageUrl); // Replace imageUrl with the image you want to share
+
+        // URL parameters for the Facebook sharing dialog
+        final params = {
+          'u': encodedUrl,
+          'quote': "Look what i found out",
+          'app_id': '336219982350210'
+        };
+
+        final queryString = Uri(queryParameters: params).query;
+        shareUrl = '$facebookBaseUrl?$queryString';
+        break;
+    // Handle other cases (Email, Twitter) similarly
+    // ...
+      case 'Email':
+        String TexttoShare = textToShare.length<700 ?textToShare:textToShare.substring(0,700);
+        final emailBaseUrl = 'mailto:?';
+        final encodedSubject = Uri.encodeFull('Shared from My App').replaceAll('%20',' '); // Customize subject as needed
+        final encodedBody = Uri.encodeFull(textToShare).replaceAll('%20',' '); // Customize body as needed
+
+        // URL parameters for the Email sharing
+        final params = {
+          'subject': 'Look What I Found Out from EkiExpress',
+          'body': TexttoShare+"\n\n $imageUrl",
+
+          // Other optional parameters: cc, bcc, etc.
+        };
+
+        final queryString = Uri(queryParameters: params).query;
+        shareUrl = '$emailBaseUrl$queryString';
+        break;
+      case 'Twitter':
+
+        final twitterBaseUrl = 'https://twitter.com/intent/tweet';
+        final encodedText = Uri.encodeFull(textToShare); // Customize as needed
+
+        // URL parameters for the Twitter sharing
+        final params = {
+          'text': "Look at this from EkieExpress $name",
+          'via':'EkiExpress',
+          'hashtags': "EkiExpress",
+          'url' : imageUrl,
+
+          // Other optional parameters: via, hashtags, etc.
+        };
+
+        final queryString = Uri(queryParameters: params).query;
+        shareUrl = '$twitterBaseUrl?$queryString';
+        break;
+
+      default:
+        break;
+    }
+
+    if (shareUrl.isNotEmpty) {
+      debugPrint(shareUrl);
+      if (await canLaunch(shareUrl)) {
+        await launch(shareUrl);
+      } else {
+        throw 'Could not launch $shareUrl';
+      }
+    }
+  }
+
 }

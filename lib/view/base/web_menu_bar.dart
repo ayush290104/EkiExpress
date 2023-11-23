@@ -81,6 +81,7 @@ class _WebMenuBarState extends State<WebMenuBar>
   @override
   void dispose() {
     // Remove the overlay entry when the state is disposed
+
     _overlayEntry?.remove();
     _scrolloverlayEntry?.remove();
     super.dispose();
@@ -90,8 +91,11 @@ class _WebMenuBarState extends State<WebMenuBar>
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Create the overlay entry after the first frame is displayed
-      _createOverlay();
-      _scrollCreateOverlay();
+      if( _shapedWidgetKey.currentContext!=null){
+        _createOverlay();
+      }
+
+      // _scrollCreateOverlay();
     });
     animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 500));

@@ -1,10 +1,15 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:icons_plus/icons_plus.dart';
+import "package:universal_html/html.dart" as html;
+import 'package:image_compression_flutter/image_compression_flutter.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart' as share_plus;
 import 'package:share/share.dart';
 import 'package:sixam_mart/controller/cart_controller.dart';
 import 'package:sixam_mart/controller/category_controller.dart';
@@ -13,7 +18,8 @@ import 'package:sixam_mart/controller/splash_controller.dart';
 import 'package:sixam_mart/controller/store_controller.dart';
 import 'package:sixam_mart/data/model/response/category_model.dart';
 import 'package:sixam_mart/data/model/response/item_model.dart';
-import 'package:sixam_mart/data/model/response/store_model.dart';import 'package:share_plus/share_plus.dart' as share_plus;
+import 'package:sixam_mart/data/model/response/store_model.dart';
+import 'package:share_plus/share_plus.dart' as share_plus;
 
 import 'package:sixam_mart/helper/date_converter.dart';
 import 'package:sixam_mart/helper/price_converter.dart';
@@ -28,6 +34,7 @@ import 'package:sixam_mart/view/base/menu_drawer.dart';
 import 'package:sixam_mart/view/base/web_menu_bar.dart';
 import 'package:sixam_mart/view/screens/checkout/checkout_screen.dart';
 import 'package:sixam_mart/view/screens/store/widget/store_description_view.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../base/item_view.dart';
 import '../../base/paginated_list_view.dart';
@@ -45,7 +52,7 @@ class StoreScreen extends StatefulWidget {
 class _StoreScreenState extends State<StoreScreen> {
   final ScrollController scrollController = ScrollController();
   final bool _ltr = Get.find<LocalizationController>().isLtr;
-
+  var url2 = "";
   @override
   void initState() {
     super.initState();
@@ -707,32 +714,90 @@ class _StoreScreenState extends State<StoreScreen> {
                                                                   InkWell(
                                                                     onTap:
                                                                         () async {
-                                                                          String
+                                                                      String
                                                                           messageToSend =
-                                                                              "Look what I found out.\n\n${catController.subCategoryList[index].name}\n\n${catController.subCategoryList[index].description}\n\n https://ekiexpress.com";
+                                                                          "Look what I found out.\n\n${catController.subCategoryList[index].name}\n\n${catController.subCategoryList[index].description}\n\n https://ekiexpress.com";
 
-                                                                          if(GetPlatform.isAndroid || GetPlatform.isIOS)               {
-                                                                        await downloadFile("${Get.find<SplashController>().configModel.baseUrls.categoryImageUrl}/" + catController.subCategoryList[index].image,
-                                                                                catController.subCategoryList[index].name)
-                                                                            .then((value) {
-                                                                        if (value !=
-                                                                              null)
-                                                                            Share.shareFiles([
-                                                                              value
-                                                                            ], text: messageToSend);
-                                                                          else
-                                                                            Share.share(messageToSend);
-                                                                        });
+                                                                      if ((GetPlatform
+                                                                              .isAndroid ||
+                                                                          GetPlatform
+                                                                              .isIOS)&&!GetPlatform.isWeb){
+                                                                        if(GetPlatform.isWeb){
+                                                                          try {
+                                                                            _showShareDialog(
+                                                                                context,
+                                                                                messageToSend,
+                                                                                "${Get.find<SplashController>().configModel.baseUrls.categoryImageUrl}/" + catController.subCategoryList[index].image, catController.subCategoryList[index].name);
+                                                                          } catch (e) {
+                                                                            Get.snackbar(
+                                                                                "etrror",
+                                                                                e.toString());
+                                                                          }
+
+                                                                        }
+                                                                        else{
+                                                                          await downloadFile("${Get.find<SplashController>().configModel.baseUrls.categoryImageUrl}/" + catController.subCategoryList[index].image,
+                                                                              catController.subCategoryList[index].name)
+                                                                              .then((value) async {
+                                                                            if (value !=
+                                                                                null)
+                                                                              share_plus.Share.shareXFiles([
+                                                                                value
+                                                                              ], text: messageToSend);
+                                                                            else {
+                                                                              Share.share(messageToSend);
+                                                                            }
+                                                                          });
+                                                                        }
+
+                                                                      } else if (GetPlatform
+                                                                          .isWeb) {
+                                                                        try {
+                                                                          _showShareDialog(
+                                                                              context,
+                                                                              messageToSend,
+                                                                              "${Get.find<SplashController>().configModel.baseUrls.categoryImageUrl}/" + catController.subCategoryList[index].image, catController.subCategoryList[index].name);
+                                                                          // final http.Response response = await http.get(Uri.parse("${Get.find<SplashController>().configModel.baseUrls.categoryImageUrl}/" + catController.subCategoryList[index].image));
+                                                                          //     debugPrint("file is this $response");
+                                                                          // Get.snackbar("etrror", "${response.bodyBytes}");
+                                                                          // final base64Image = 'data:image/jpeg;base64,${base64Encode(response.bodyBytes)}';
+                                                                          // final Directory directory = await getTemporaryDirectory();
+                                                                          // final File file = await File('${directory.path}/Image.png').writeAsBytes(response.bodyBytes);
+                                                                          // if(response.bodyBytes!=null){
+                                                                          //   debugPrint("file is this hello1 ${Get.find<SplashController>().configModel.baseUrls.categoryImageUrl}/" + catController.subCategoryList[index].image);
+                                                                          //   final blob = html.Blob([response.bodyBytes], 'image/jpeg');
+                                                                          //   final url = html.Url.createObjectUrlFromBlob(blob);
+                                                                          //   debugPrint("file is this hello2 $url");
+                                                                          //  await share_plus.Share.shareXFiles([
+                                                                          //     XFile(url)
+                                                                          //   ], text: messageToSend);
+                                                                          //   debugPrint("file is this hello3");
+                                                                          //   // html.Url.revokeObjectUrl(url);
+                                                                          // }
+                                                                        } catch (e) {
+                                                                          Get.snackbar(
+                                                                              "etrror",
+                                                                              e.toString());
+                                                                        }
+                                                                        // await downloadFile("${Get.find<SplashController>().configModel.baseUrls.categoryImageUrl}/" + catController.subCategoryList[index].image,
+                                                                        //     catController.subCategoryList[index].name)
+                                                                        //     .then((value) {
+                                                                        //   if (value !=
+                                                                        //       null)
+                                                                        //     share_plus.Share.shareXFiles([value], text: messageToSend);
+                                                                        //   else
+                                                                        //     share_plus.Share.shareWithResult(messageToSend);
+                                                                        // });
+                                                                        // shareImage(
+                                                                        //    ["${Get.find<SplashController>().configModel.baseUrls.categoryImageUrl}/" + catController.subCategoryList[index].image],
+                                                                        //     messageToSend);
                                                                       }
-                                                           else if(GetPlatform.isWeb){
-                                                             shareImage(
-                                                                ["${Get.find<SplashController>().configModel.baseUrls.categoryImageUrl}/" + catController.subCategoryList[index].image],
-                                                                 messageToSend);
-                                                           }
                                                                     },
                                                                     child: Icon(
                                                                         Icons
-                                                                            .share),
+                                                                            .share,
+                                                                        color: Colors
+                                                                            .green),
                                                                   ),
                                                                 ],
                                                               ),
@@ -875,7 +940,7 @@ class _StoreScreenState extends State<StoreScreen> {
         }));
   }
 
-  Future<String> downloadFile(String url, String name) async {
+  Future<XFile> downloadFile(String url, String name) async {
     try {
       final response = await http.get(Uri.parse(url));
 
@@ -885,7 +950,7 @@ class _StoreScreenState extends State<StoreScreen> {
             '$name.png'; // Set the desired file name and extension.
         final file = File('${appDir.path}/$filename');
         await file.writeAsBytes(response.bodyBytes);
-        return file.path;
+        return XFile(file.path);
       } else {
         print('Failed to download file. Status code: ${response.statusCode}');
         return null;
@@ -894,17 +959,137 @@ class _StoreScreenState extends State<StoreScreen> {
       print('Error while downloading file: $e');
       return null;
     }
-
-
-
   }
+
   Future<void> shareImage(List<String> images, String text) async {
     var imagesString = "Images: \n";
-    images.forEach((element) {
-      imagesString = imagesString + element + "\n";
-    });
+
+    // images.forEach((element) {
+    //   imagesString = imagesString + element + "\n";
+    // });
     imagesString = imagesString + "\n Details: \n" + text;
-    share_plus.Share.share(imagesString);
+    // await downloadFile(images[0],text)
+    //     .then((value) {
+    //   if (value !=
+    //       null)
+    //     share_plus.Share.shareWithResult(text);
+    //   else
+    //     Share.share(text);
+    // });
+    share_plus.Share.shareWithResult(text);
+  }
+}
+
+Future<void> _showShareDialog(BuildContext context,String Texttoshare,String ImageUrl,String name) async {
+  String selectedShareOption = await showDialog<String>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Share Via'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildShareOption(context, 'Whatsapp'),
+            _buildShareOption(context, 'Facebook'),
+            _buildShareOption(context, 'Email'),
+            _buildShareOption(context, 'Twitter'),
+          ],
+        ),
+      );
+    },
+  );
+
+  if (selectedShareOption != null) {
+    await _handleShareOption(selectedShareOption,Texttoshare,ImageUrl,name);
+  }
+}
+Widget _buildShareOption(BuildContext context, String option) {
+  return ListTile(
+    leading: option=='Facebook'?Logo(Logos.facebook_logo):option=='Email'?Logo(Logos.gmail):option=='Whatsapp'?Logo(Logos.whatsapp):Logo(Logos.twitter),
+    title: Text(option),
+    onTap: () {
+      Navigator.of(context).pop(option);
+    },
+    dense: true,
+  );
+}
+Future<void> _handleShareOption(String selectedOption,String textToShare,String imageUrl,String name) async {
+  String shareUrl = '';
+  switch (selectedOption){
+    case 'Whatsapp':
+      String Textfinal = imageUrl+"\n\n $textToShare";
+      final encodedText = Uri.encodeFull(Textfinal);
+      shareUrl = 'https://wa.me/?text=$encodedText';
+      break;
+    case 'Facebook':
+    // Facebook sharing logic
+      final facebookBaseUrl = 'https://www.facebook.com/sharer/sharer.php';
+      final encodedUrl = Uri.encodeFull(imageUrl); // Replace imageUrl with the image you want to share
+      // URL parameters for the Facebook sharing dialog
+      final params = {
+        'u': encodedUrl,
+        'quote': "Look what i found out this recipe",
+        'app_id': '336219982350210'
+      };
+
+      final queryString = Uri(queryParameters: params).query;
+      shareUrl = '$facebookBaseUrl?$queryString';
+      break;
+  // Handle other cases (Email, Twitter) similarly
+  // ...
+    case 'Email':
+
+
+      String TexttoShare = textToShare.length<700 ?textToShare:textToShare.substring(0,700);
+      String emailBody = TexttoShare.replaceAll('%20', ' ');
+
+      final emailBaseUrl = 'mailto:?';
+      String emailContent = imageUrl + "\n \n" + emailBody;
+
+      final encodedSubject = Uri.encodeFull('Shared from My App');
+      final encodedBody = Uri.encodeFull(emailContent);
+
+// URL parameters for the Email sharing
+      final params = {
+        'subject': encodedSubject,
+        'body': encodedBody,
+        // Other optional parameters: cc, bcc, etc.
+      };
+
+      final queryString = Uri(queryParameters: params).query;
+      String shareUrl = '$emailBaseUrl$queryString';
+      break;
+    case 'Twitter':
+
+      final twitterBaseUrl = 'https://twitter.com/intent/tweet';
+      final encodedText = Uri.encodeFull("Want To Know this Recipe Visit https://ekiexpress.com"); // Customize as needed
+
+      // URL parameters for the Twitter sharing
+      final params = {
+        'text': "Want To Know this Recipe of ${name} \n\n Visit https://ekiexpress.com\n\n",
+        'via':'EkiExpress',
+        'hashtags': "EkiExpress",
+        'url' : imageUrl,
+
+        // Other optional parameters: via, hashtags, etc.
+      };
+
+      final queryString = Uri(queryParameters: params).query;
+      shareUrl = '$twitterBaseUrl?$queryString';
+      break;
+
+    default:
+      break;
+  }
+
+  if (shareUrl.isNotEmpty) {
+    debugPrint(shareUrl);
+    if (await canLaunch(shareUrl)) {
+      await launch(shareUrl);
+    } else {
+      throw 'Could not launch $shareUrl';
+    }
   }
 }
 

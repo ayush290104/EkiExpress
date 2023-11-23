@@ -29,7 +29,7 @@ dependencies:
   shimmer_animation: ^2.1.0+1
   image_picker: ^0.8.5+3
   image_picker_ios: ^0.8.5+6
-  universal_html: ^2.0.8
+  universal_html: ^2.2.2
   universal_ui: ^0.0.8
   flutter_inappwebview: ^5.7.1
   flutter_widget_from_html: ^0.8.5
@@ -54,9 +54,11 @@ dependencies:
   flutter_animarker: ^3.2.0
   sign_in_with_apple: ^4.3.0
   share: ^2.0.4
-  share_plus: ^7.1.0
+  share_plus: ^7.2.1
   share_whatsapp:
   firebase_auth: ^4.13.0
+  cross_file: ^0.3.3+6
+  icons_plus: ^3.0.0
 
 dev_dependencies:
   flutter_test:

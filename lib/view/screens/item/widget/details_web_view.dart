@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:icons_plus/icons_plus.dart';
+import 'package:image_compression_flutter/image_compression_flutter.dart';
+import 'package:universal_html/html.dart' as html;
 import 'package:get/get.dart';
 import 'package:sixam_mart/controller/auth_controller.dart';
 import 'package:sixam_mart/controller/cart_controller.dart';
@@ -14,6 +17,7 @@ import 'package:sixam_mart/util/images.dart';
 import 'package:sixam_mart/util/styles.dart';
 import 'package:sixam_mart/view/base/confirmation_dialog.dart';
 import 'package:sixam_mart/view/base/custom_button.dart';
+import 'package:share_plus/share_plus.dart' as share_plus;
 import 'package:sixam_mart/view/base/custom_image.dart';
 import 'package:sixam_mart/view/base/custom_snackbar.dart';
 import 'package:sixam_mart/view/base/footer_view.dart';
@@ -50,6 +54,7 @@ import 'package:sixam_mart/view/base/menu_drawer.dart';
 import 'package:sixam_mart/view/base/web_menu_bar.dart';
 import 'package:sixam_mart/view/screens/checkout/checkout_screen.dart';
 import 'package:sixam_mart/view/screens/store/widget/store_description_view.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 
 class DetailsWebView extends StatelessWidget {
@@ -272,6 +277,48 @@ class DetailsWebView extends StatelessWidget {
                               ),
                             ),
                           ),
+                          SizedBox(width: Dimensions.PADDING_SIZE_LARGE),
+                          InkWell(
+                            onTap:
+                                () async {
+                              debugPrint("this is tapped and works");
+                              String
+                              messageToSend =
+                                  "Look what I found out.\n\n${itemController.item.name}\n\n${itemController.item.description}\n\n  https://ekiexpress.com/item-details?id=${itemController.item.id}&page=item";
+
+                              if((GetPlatform.isAndroid || GetPlatform.isIOS)&&!GetPlatform.isWeb){
+                                _showShareDialog(context,messageToSend,"$_baseUrl/${_imageList[itemController.productSelect]}",itemController.item.name);
+                                // await downloadFile("${Get.find<SplashController>().configModel.baseUrls.categoryImageUrl}/" +itemController.item.image,
+                                //     itemController.item.name)
+                                //     .then((value) {
+                                //   if (value !=
+                                //       null)
+                                //
+                                //     share_plus.Share.shareXFiles([value], text: messageToSend);
+                                //   else
+                                //     Share.share(messageToSend);
+                                // });
+                              }
+                              else if(GetPlatform.isWeb){
+                                _showShareDialog(context,messageToSend,"$_baseUrl/${_imageList[itemController.productSelect]}",itemController.item.name);
+                                // await downloadFile("${Get.find<SplashController>().configModel.baseUrls.categoryImageUrl}/" +itemController.item.image,
+                                //     itemController.item.name)
+                                //     .then((value) {
+                                //   if (value !=
+                                //       null)
+                                //
+                                //     share_plus.Share.shareXFiles([value], text: messageToSend);
+                                //   else
+                                //     share_plus.Share.shareWithResult(messageToSend);
+                                // });
+                              //  showShareDialog(context, ["${Get.find<SplashController>().configModel.baseUrls.categoryImageUrl}/" + itemController.item.image],
+                                   // messageToSend);
+                              }
+                            },
+                            child: Icon(
+                              Icons
+                                  .share,color: Colors.green,),
+                          ),
                         ])),
 
                         (itemController.item.description != null && itemController.item.description.isNotEmpty) ? Column(
@@ -282,37 +329,6 @@ class DetailsWebView extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text('description'.tr, style: robotoMedium),
-
-                                InkWell(
-                                  onTap:
-                                      () async {
-                                    String
-                                    messageToSend =
-                                        "Look what I found out.\n\n${itemController.item.name}\n\n${itemController.item.description}\n\n  https://ekiexpress.com/item-details?id=${itemController.item.id}&page=item";
-
-                                    if(GetPlatform.isAndroid || GetPlatform.isIOS)               {
-                                      await downloadFile("${Get.find<SplashController>().configModel.baseUrls.categoryImageUrl}/" +itemController.item.image,
-                                          itemController.item.name)
-                                          .then((value) {
-                                        if (value !=
-                                            null)
-                                          Share.shareFiles([
-                                            value
-                                          ], text: messageToSend);
-                                        else
-                                          Share.share(messageToSend);
-                                      });
-                                    }
-                                    else if(GetPlatform.isWeb){
-                                      shareImage(
-                                          ["${Get.find<SplashController>().configModel.baseUrls.categoryImageUrl}/" + itemController.item.image],
-                                          messageToSend);
-                                    }
-                                  },
-                                  child: Icon(
-                                      Icons
-                                          .share),
-                                ),
                               ],
                             ),
                             SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
@@ -330,7 +346,7 @@ class DetailsWebView extends StatelessWidget {
     });
   }
 
-  Future<String> downloadFile(String url, String name) async {
+  Future<XFile> downloadFile(String url, String name) async {
     try {
       final response = await http.get(Uri.parse(url));
 
@@ -340,7 +356,7 @@ class DetailsWebView extends StatelessWidget {
             '$name.png'; // Set the desired file name and extension.
         final file = File('${appDir.path}/$filename');
         await file.writeAsBytes(response.bodyBytes);
-        return file.path;
+        return XFile(file.path);
       } else {
         print('Failed to download file. Status code: ${response.statusCode}');
         return null;
@@ -354,6 +370,7 @@ class DetailsWebView extends StatelessWidget {
 
   }
   Future<void> shareImage(List<String> images, String text) async {
+    debugPrint("this is a website");
     var imagesString = "Images: \n";
     images.forEach((element) {
       imagesString = imagesString + element + "\n";
@@ -361,5 +378,164 @@ class DetailsWebView extends StatelessWidget {
     imagesString = imagesString + "\n Details: \n" + text;
     share_plus.Share.share(imagesString);
   }
+  void shareOnFacebook(List<String> images, String text) {
+    var imagesString = "Images: \n";
+    images.forEach((element) {
+      imagesString = imagesString + element + "\n";
+    });
+    imagesString = imagesString + "\n Details: \n" + text;
+    var content = Uri.encodeComponent(imagesString);
+    var url = 'https://www.facebook.com/sharer/sharer.php?u=$content';
+    html.window.open(url, 'Facebook');
+  }
 
+  void shareOnWhatsApp(List<String> images, String text) {
+    var imagesString = "Images: \n";
+    images.forEach((element) {
+      imagesString = imagesString + element + "\n";
+    });
+    imagesString = imagesString + "\n Details: \n" + text;
+    var content = Uri.encodeComponent(imagesString);
+    var url = 'https://api.whatsapp.com/send?text=$content';
+    html.window.open(url, 'WhatsApp');
+  }
+
+  void showShareDialog(BuildContext context,List<String> images, String text) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Share via'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  shareOnFacebook(images,text);
+                  Navigator.of(context).pop();
+                },
+                child: Text('Facebook'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  shareOnWhatsApp(images,text);
+                  Navigator.of(context).pop();
+                },
+                child: Text('WhatsApp'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+}
+
+Future<void> _showShareDialog(BuildContext context,String Texttoshare,String ImageUrl,String name) async {
+
+  String selectedShareOption = await showDialog<String>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Share Via'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildShareOption(context, 'Whatsapp'),
+            _buildShareOption(context, 'Facebook'),
+            _buildShareOption(context, 'Email'),
+            _buildShareOption(context, 'Twitter'),
+          ],
+        ),
+      );
+    },
+  );
+
+  if (selectedShareOption != null) {
+    await _handleShareOption(selectedShareOption,Texttoshare,ImageUrl,name);
+  }
+}
+Widget _buildShareOption(BuildContext context, String option) {
+  return ListTile(
+    leading: option=='Facebook'?Logo(Logos.facebook_logo):option=='Email'?Logo(Logos.gmail):option=='Whatsapp'?Logo(Logos.whatsapp):Logo(Logos.twitter),
+    title: Text(option),
+    onTap: () {
+      Navigator.of(context).pop(option);
+    },
+    dense: true,
+  );
+}
+Future<void> _handleShareOption(String selectedOption,String textToShare,String imageUrl,String name) async {
+  String shareUrl = '';
+  switch (selectedOption){
+    case 'Whatsapp':
+      String Textfinal = imageUrl+"\n\n $textToShare";
+      final encodedText = Uri.encodeFull(Textfinal);
+      shareUrl = 'https://wa.me/?text=$encodedText';
+      break;
+    case 'Facebook':
+    // Facebook sharing logic
+      final facebookBaseUrl = 'https://www.facebook.com/sharer/sharer.php';
+      final encodedUrl = Uri.encodeFull(imageUrl); // Replace imageUrl with the image you want to share
+
+      // URL parameters for the Facebook sharing dialog
+      final params = {
+        'u': encodedUrl,
+        'quote': "Look what I",
+        'app_id': '336219982350210'
+      };
+
+      final queryString = Uri(queryParameters: params).query;
+      shareUrl = '$facebookBaseUrl?$queryString';
+      break;
+  // Handle other cases (Email, Twitter) similarly
+  // ...
+    case 'Email':
+      String TexttoShare = textToShare.length<700 ?textToShare:textToShare.substring(0,700);
+      final emailBaseUrl = 'mailto:?';
+
+      // URL parameters for the Email sharing
+      final params = {
+        'subject': 'Look What I Found Out from EkiExpress',
+        'body': TexttoShare+"\n\n $imageUrl\n Visit \n https://ekiexpress.com",
+
+        // Other optional parameters: cc, bcc, etc.
+      };
+
+      final queryString = Uri(queryParameters: params).query;
+      shareUrl = '$emailBaseUrl$queryString';
+      break;
+    case 'Twitter':
+
+      final twitterBaseUrl = 'https://twitter.com/intent/tweet';
+      final encodedText = Uri.encodeFull(textToShare); // Customize as needed
+
+      // URL parameters for the Twitter sharing
+      final params = {
+        'text': "Look at this from EkieExpress $name\n\n Visit \n https://ekiexpress.com\n\n",
+        'via':'EkiExpress',
+        'hashtags': "EkiExpress",
+        'url' : imageUrl,
+
+        // Other optional parameters: via, hashtags, etc.
+      };
+
+      final queryString = Uri(queryParameters: params).query;
+      shareUrl = '$twitterBaseUrl?$queryString';
+      break;
+
+    default:
+      break;
+  }
+
+  if (shareUrl.isNotEmpty) {
+    debugPrint(shareUrl);
+    if (await canLaunch(shareUrl)) {
+      await launch(shareUrl);
+    } else {
+      throw 'Could not launch $shareUrl';
+    }
+  }
 }
