@@ -54,6 +54,7 @@ class BannerView extends StatelessWidget {
                       .configModel.baseUrls.campaignImageUrl  : Get.find<SplashController>().configModel.baseUrls.bannerImageUrl;
                   return InkWell(
                     onTap: () async {
+
                       if(bannerDataList[index] is Item) {
                         Item _item = bannerDataList[index];
                         Get.find<ItemController>().navigateToItemPage(_item, context);

@@ -14,6 +14,8 @@ import 'package:sixam_mart/view/base/custom_app_bar.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:sixam_mart/view/screens/checkout/widget/payment_failed_dialog.dart';
 
+import '../../../controller/cart_controller.dart';
+
 class PaymentScreen extends StatefulWidget {
   final OrderModel orderModel;
   final bool isCashOnDelivery;
@@ -248,6 +250,7 @@ class MyInAppBrowser extends InAppBrowser {
         close();
       }
       if (_isSuccess) {
+        Get.find<CartController>().clearCartList();
         Get.offNamed(RouteHelper.getOrderSuccessRoute(orderID));
       } else if (_isFailed || _isCancel) {
         Get.offNamed(RouteHelper.getOrderSuccessRoute(orderID));

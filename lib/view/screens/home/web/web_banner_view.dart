@@ -107,25 +107,43 @@ class WebBannerView extends StatelessWidget {
   }
 
   void _onTap(int index, BuildContext context) async {
+    debugPrint("index of the element tapped is ${index}");
     if(bannerController.bannerDataList[index] is Item) {
+      debugPrint("index of the element is a");
       Item _item = bannerController.bannerDataList[index];
       Get.find<ItemController>().navigateToItemPage(_item, context);
     }else if(bannerController.bannerDataList[index] is Store) {
+      debugPrint("index of the element is b");
+
       Store _store = bannerController.bannerDataList[index];
       Get.toNamed(
         RouteHelper.getStoreRoute(_store.id, 'banner'),
         arguments: StoreScreen(store: _store, fromModule: false),
       );
     }else if(bannerController.bannerDataList[index] is BasicCampaignModel) {
+      debugPrint("index of the element is c");
+
       BasicCampaignModel _campaign = bannerController.bannerDataList[index];
       Get.toNamed(RouteHelper.getBasicCampaignRoute(_campaign));
     }else {
+
+
       String url = bannerController.bannerDataList[index];
-      if (await canLaunchUrlString(url)) {
-        await launchUrlString(url, mode: LaunchMode.externalApplication);
-      }else {
-        showCustomSnackBar('unable_to_found_url'.tr);
+      debugPrint("index of the element is ${url}");
+      if(url==null){
+       if(index==0||index==5){
+         Get.offNamed(RouteHelper.getReferAndEarnRoute());
+       }
       }
+      else{
+        if (await canLaunchUrlString(url)) {
+          await launchUrlString(url, mode: LaunchMode.externalApplication);
+        }else {
+          showCustomSnackBar('unable_to_found_url'.tr);
+        }
+      }
+
+
     }
   }
 }

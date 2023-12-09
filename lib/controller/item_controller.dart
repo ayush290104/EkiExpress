@@ -355,21 +355,41 @@ class ItemController extends GetxController implements GetxService {
     }
   }
 
-  Future<void> getProductDetails(Item item) async {
+  Future<void> getProductDetails(Item item,int itemId) async {
     _item = null;
-    if(item.name != null) {
-      _item = item;
-    }else {
-      _item = null;
-      Response response = await itemRepo.getItemDetails(item.id);
+    if(item.name==null){
+      debugPrint("i am at the edge");
+      Response response = await itemRepo.getItemDetails(itemId);
       if (response.statusCode == 200) {
-        _item = Item.fromJson(response.body);
+        item = Item.fromJson(response.body);
       } else {
         ApiChecker.checkApi(response);
       }
+
     }
-    initData(_item, null);
-    setExistInCart(item, notify: false);
+    debugPrint("item is 124555 ${item.name}");
+
+
+      if(item.name != null) {
+
+        _item = item;
+
+      }else {
+        _item = null;
+        Response response = await itemRepo.getItemDetails(item.id);
+        if (response.statusCode == 200) {
+          _item = Item.fromJson(response.body);
+        } else {
+          ApiChecker.checkApi(response);
+        }
+      }
+      debugPrint("item name is 20044 ${_item.name}");
+      initData(_item, null);
+
+      setExistInCart(item, notify: false);
+      update();
+
+
   }
 
   void setSelect(int select, bool notify){

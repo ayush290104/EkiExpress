@@ -97,8 +97,8 @@ class _SocialLoginWidgetState extends State<SocialLoginWidget> {
                               accessToken: _auth.accessToken,
                               idToken: _auth.idToken,
                             );
-                            await FirebaseAuth.instance
-                                .signInWithCredential(credential);
+                            // await FirebaseAuth.instance
+                            //     .signInWithCredential(credential);
                             if (usercredential != null) {
                               //debugPrint("tapped ${_googleSignIn.currentUser.displayName}");
                               Get.find<AuthController>()

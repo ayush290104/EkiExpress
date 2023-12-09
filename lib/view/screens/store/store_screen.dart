@@ -1018,7 +1018,7 @@ Future<void> _handleShareOption(String selectedOption,String textToShare,String 
   String shareUrl = '';
   switch (selectedOption){
     case 'Whatsapp':
-      String Textfinal = imageUrl+"\n\n $textToShare";
+      String Textfinal = imageUrl+"\n\n ${html.window.location.href} \n\n $textToShare";
       final encodedText = Uri.encodeFull(Textfinal);
       shareUrl = 'https://wa.me/?text=$encodedText';
       break;
@@ -1063,11 +1063,11 @@ Future<void> _handleShareOption(String selectedOption,String textToShare,String 
     case 'Twitter':
 
       final twitterBaseUrl = 'https://twitter.com/intent/tweet';
-      final encodedText = Uri.encodeFull("Want To Know this Recipe Visit https://ekiexpress.com"); // Customize as needed
+      final encodedText = Uri.encodeFull("Want To Know this Recipe Visit ${html.window.location.href}"); // Customize as needed
 
       // URL parameters for the Twitter sharing
       final params = {
-        'text': "Want To Know this Recipe of ${name} \n\n Visit https://ekiexpress.com\n\n",
+        'text': "Want To Know this Recipe of ${name} \n\n Visit ${html.window.location.href}\n\n",
         'via':'EkiExpress',
         'hashtags': "EkiExpress",
         'url' : imageUrl,

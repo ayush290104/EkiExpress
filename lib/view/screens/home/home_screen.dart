@@ -85,12 +85,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     super.dispose();
-
     _scrollController?.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("atleast here i came");
     return GetBuilder<SplashController>(builder: (splashController) {
       bool _showMobileModule = !ResponsiveHelper.isDesktop(context) && splashController.module == null && splashController.configModel.module == null;
       bool _isParcel = splashController.module != null && splashController.configModel.moduleConfig.module.isParcel;
@@ -280,7 +280,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       }),
 
-                    ]) : ModuleView(splashController: splashController),
+                    ]) :
+                    ModuleView(splashController: splashController),
                   )),
                 ),
               ],

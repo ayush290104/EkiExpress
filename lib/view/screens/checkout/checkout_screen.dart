@@ -823,9 +823,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   void _callback(bool isSuccess, String message, String orderID, int zoneID, double amount, double maximumCodOrderAmount) async {
     if(isSuccess) {
-      if(widget.fromCart) {
-        Get.find<CartController>().clearCartList();
-      }
       if(!Get.find<OrderController>().showBottomSheet){
         Get.find<OrderController>().showRunningOrders();
       }
@@ -862,6 +859,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       alignment: Alignment.center,
       padding: ResponsiveHelper.isDesktop(context) ? null : EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
       child: !orderController.isLoading ? CustomButton(buttonText: 'confirm_order'.tr, onPressed: orderController.acceptTerms ? () {
+       debugPrint("here is payment cutting");
         bool _isAvailable = true;
         DateTime _scheduleStartDate = DateTime.now();
         DateTime _scheduleEndDate = DateTime.now();

@@ -211,7 +211,7 @@ class _CartScreenState extends State<CartScreen> {
                                                   margin: EdgeInsets.all(15),
                                                   onPressed: () async {
                                                     String messageToSend =
-                                                        "Hello I am buying some stuff from Eki Express. Please check it and ensure that I can proceed with it.";
+                                                        "Hello, I am buying the following things from EkiExpress and wanted to know if you want to add anything";
 
                                                     cartController.cartList
                                                         .forEach((element) {
@@ -289,7 +289,7 @@ class _CartScreenState extends State<CartScreen> {
                                 margin: EdgeInsets.all(15),
                                 onPressed: () async {
                                   String messageToSend =
-                                      "Hello I am buying some stuff from Eki Express. Please check it and ensure that I can proceed with it.";
+                                      "Hello, I am buying the following things from EkiExpress and wanted to know if you want to add anything";
 
                                   cartController.cartList.forEach((element) {
                                     messageToSend = messageToSend +

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:universal_html/html.dart' as html;
 import 'package:sixam_mart/controller/cart_controller.dart';
 import 'package:sixam_mart/controller/item_controller.dart';
 import 'package:sixam_mart/controller/splash_controller.dart';
@@ -22,10 +23,12 @@ import 'package:sixam_mart/view/screens/item/widget/details_web_view.dart';
 import 'package:sixam_mart/view/screens/item/widget/item_image_view.dart';
 import 'package:sixam_mart/view/screens/item/widget/item_title_view.dart';
 
+import '../../../data/repository/item_repo.dart';
+
 class ItemDetailsScreen extends StatefulWidget {
   final Item item;
   final bool inStorePage;
-  ItemDetailsScreen({@required this.item, @required this.inStorePage});
+  ItemDetailsScreen({this.item,this.inStorePage});
 
   @override
   State<ItemDetailsScreen> createState() => _ItemDetailsScreenState();
@@ -37,10 +40,23 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
   final GlobalKey<DetailsAppBarState> _key = GlobalKey();
 
   @override
-  void initState() {
+  Future<void> initState() {
     super.initState();
+   debugPrint("name of item is ${widget.item.id}");
 
-    Get.find<ItemController>().getProductDetails(widget.item);
+    if(GetPlatform.isWeb){
+      String urlString = html.window.location.href;
+      Uri uri = Uri.parse(urlString);
+      String itemId = uri.queryParameters['id'];
+      debugPrint("url of the webpage i am using is ${int.parse(itemId)}");
+
+      Get.find<ItemController>()
+          .getProductDetails(widget.item, int.parse(itemId));
+    }
+    else{
+      Get.find<ItemController>()
+          .getProductDetails(widget.item, widget.item.id);
+    }
   }
 
   @override

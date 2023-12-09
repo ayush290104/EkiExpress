@@ -26,6 +26,7 @@ class ModuleView extends StatelessWidget {
 
       GetBuilder<BannerController>(builder: (bannerController) {
         return BannerView(isFeatured: true);
+
       }),
 
       splashController.moduleList != null ? splashController.moduleList.length > 0 ? GridView.builder(
