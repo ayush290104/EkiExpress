@@ -136,7 +136,7 @@ class DetailsWebView extends StatelessWidget {
                           padding: EdgeInsets.zero,
                           itemBuilder: (context, index) {
                             return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                              Text(itemController.item.choiceOptions[index].title, style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge)),
+                              Text(itemController.item.choiceOptions[index].title??"", style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge)),
                               SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
                               GridView.builder(
                                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

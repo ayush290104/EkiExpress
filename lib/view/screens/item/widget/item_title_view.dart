@@ -134,7 +134,7 @@ class ItemTitleView extends StatelessWidget {
                   child: Padding(
                     padding: EdgeInsets.fromLTRB(0, 5, 5, 5),
                     child: Text(
-                      item.storeName,
+                      item.storeName??"",
                       style: robotoRegular.copyWith(
                           fontSize: Dimensions.fontSizeSmall),
                     ),
@@ -149,7 +149,7 @@ class ItemTitleView extends StatelessWidget {
                 Row(children: [
                   Text(
                     '${PriceConverter.convertPrice(_startingPrice, discount: item.discount, discountType: item.discountType)}'
-                    '${_endingPrice != null ? ' - ${PriceConverter.convertPrice(_endingPrice, discount: item.discount, discountType: item.discountType)}' : ''}',
+                    '${_endingPrice != null ? ' - ${PriceConverter.convertPrice(_endingPrice, discount: item.discount, discountType: item.discountType)}' : ''}'??"",
                     style: robotoBold.copyWith(
                         color: Theme.of(context).primaryColor, fontSize: 30),
                     textDirection: TextDirection.ltr,
@@ -159,7 +159,7 @@ class ItemTitleView extends StatelessWidget {
                       ? Flexible(
                           child: Text(
                             '${PriceConverter.convertPrice(_startingPrice)}'
-                            '${_endingPrice != null ? ' - ${PriceConverter.convertPrice(_endingPrice)}' : ''}',
+                            '${_endingPrice != null ? ' - ${PriceConverter.convertPrice(_endingPrice)}' : ''}'??"",
                             textDirection: TextDirection.ltr,
                             style: robotoRegular.copyWith(
                                 color: Colors.red,
@@ -178,7 +178,7 @@ class ItemTitleView extends StatelessWidget {
                       borderRadius:
                           BorderRadius.circular(Dimensions.RADIUS_SMALL),
                     ),
-                    child: Text(inStock ? 'out_of_stock'.tr : 'in_stock'.tr,
+                    child: Text(inStock ? 'out_of_stock'.tr : 'in_stock'.tr??"",
                         style: robotoRegular.copyWith(
                           color: Colors.white,
                           fontSize: Dimensions.fontSizeSmall,

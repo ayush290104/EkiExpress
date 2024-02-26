@@ -64,7 +64,9 @@ class SplashController extends GetxController implements GetxService {
       }
       _isSuccess = true;
     }else {
+      debugPrint("response is ${response.statusText.toString()}");
       ApiChecker.checkApi(response);
+
       if(response.statusText == ApiClient.noInternetMessage) {
         _hasConnection = false;
       }
@@ -107,6 +109,7 @@ class SplashController extends GetxController implements GetxService {
     if(module != null) {
       if(_configModel != null) {
         _configModel.moduleConfig.module = Module.fromJson(_data['module_config'][module.moduleType]);
+        debugPrint("value of configmodel taxing is ${_configModel.taxIncluded}");
       }
       splashRepo.setCacheModule(module);
       Get.find<CartController>().getCartData();

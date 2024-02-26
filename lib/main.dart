@@ -96,7 +96,8 @@ class _MyAppState extends State<MyApp> {
     }
     Get.find<SplashController>().getConfigData().then((bool isSuccess) async {
       if (isSuccess) {
-        if (Get.find<AuthController>().isLoggedIn()) {
+        if (Get.find<AuthController>().isLoggedIn())
+        {
           Get.find<AuthController>().updateToken();
           await Get.find<WishListController>().getWishList();
         }

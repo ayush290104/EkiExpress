@@ -366,7 +366,8 @@ class StoreController extends GetxController implements GetxService {
   }
 
   bool isStoreClosed(bool today, bool active, List<Schedules> schedules) {
-    if (!active) {
+    schedules.forEach((element) {debugPrint("the value is ${element.day}");});
+    if (!active&&today) {
       return true;
     }
     DateTime _date = DateTime.now();
@@ -377,6 +378,7 @@ class StoreController extends GetxController implements GetxService {
     if (_weekday == 7) {
       _weekday = 0;
     }
+
     for (int index = 0; index < schedules.length; index++) {
       if (_weekday == schedules[index].day) {
         return false;

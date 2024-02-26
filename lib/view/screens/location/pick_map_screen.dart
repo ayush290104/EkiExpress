@@ -71,6 +71,7 @@ class _PickMapScreenState extends State<PickMapScreen> {
           return Stack(children: [
             
             GoogleMap(
+              mapType: MapType.normal,
               initialCameraPosition: CameraPosition(
                 target: widget.fromAddAddress
                     ? LatLng(locationController.position.latitude,

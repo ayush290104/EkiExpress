@@ -44,6 +44,7 @@ class _MapScreenState extends State<MapScreen> {
           width: Dimensions.WEB_MAX_WIDTH,
           child: Stack(children: [
             GoogleMap(
+              mapType: MapType.hybrid,
               initialCameraPosition: CameraPosition(target: _latLng, zoom: 16),
               minMaxZoomPreference: MinMaxZoomPreference(0, 16),
               zoomGesturesEnabled: true,

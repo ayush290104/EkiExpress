@@ -325,7 +325,7 @@ class _WebMenuBarState extends State<WebMenuBar>
 
 
                                 await  Get.find<SearchController>().searchData(text, true);
-                                debugPrint("value of list came is here ${searchController.searchItemList.length}");
+                                // debugPrint("value of list came is here ${searchController.searchItemList.length}");
                                 if(_scrollWidgetKey.currentContext!=null){
                                   _scrollCreateOverlay();
                                 }
@@ -603,6 +603,7 @@ Widget Lenge (SearchController searchController){
                                   ),
                                   Text(
                                     _globalsearchController
+                                        .searchItemList[index].storeName==null?"":_globalsearchController
                                         .searchItemList[index].storeName,
                                     style: robotoRegular.copyWith(
                                       fontSize: Dimensions.fontSizeExtraSmall,

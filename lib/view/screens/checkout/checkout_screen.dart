@@ -154,6 +154,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           bool _todayClosed = false;
           bool _tomorrowClosed = false;
           Pivot _moduleData;
+
           if(storeController.store != null) {
             for(ZoneData zData in Get.find<LocationController>().getUserAddress().zoneData) {
 
@@ -171,6 +172,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             }
             _todayClosed = storeController.isStoreClosed(true, storeController.store.active, storeController.store.schedules);
             _tomorrowClosed = storeController.isStoreClosed(false, storeController.store.active, storeController.store.schedules);
+            debugPrint("status of closed is ${_todayClosed} and $_tomorrowClosed");
             _taxPercent = storeController.store.tax;
           }
           return GetBuilder<CouponController>(builder: (couponController) {
@@ -264,10 +266,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
               if(_taxIncluded){
                 _tax = _orderAmount * _taxPercent /(100 + _taxPercent);
+                debugPrint("Tax amount is ${_tax} and ${_taxIncluded}");
               }else{
                 _tax = PriceConverter.calculation(_orderAmount, _taxPercent, 'percent', 1);
               }
-              double _total = _subTotal + _deliveryCharge - _discount - _couponDiscount + (_taxIncluded ? 0 : _tax) + orderController.tips;
+
+              double _total = _subTotal + _deliveryCharge - _discount - _couponDiscount + orderController.tips;
+              if(_taxIncluded){
+                _total+=_tax;
+              }
 
               return (orderController.distance != null && locationController.addressList != null && storeController.store != null) ? Column(
                 children: [

@@ -88,7 +88,8 @@ class ItemController extends GetxController implements GetxService {
       Response response = await itemRepo.getReviewedItemList(type);
       if (response.statusCode == 200) {
         _reviewedItemList = [];
-        _reviewedItemList.addAll(ItemModel.fromJson(response.body).items);
+        //debugPrint("hello brother");
+       // _reviewedItemList.addAll(ItemModel.fromJson(response.body).items);
         _isLoading = false;
       } else {
         ApiChecker.checkApi(response);
@@ -140,8 +141,9 @@ class ItemController extends GetxController implements GetxService {
         });
       }
     }else {
-      if(Get.find<SplashController>().getModuleConfig(item.moduleType).newVariation) {
-        for(int index=0; index<item.foodVariations.length; index++) {
+      if(Get.find<SplashController>().getModuleConfig(item.moduleType).newVariation)
+      {
+        for(int index=0; index<item.foodVariations?.length; index++) {
           _selectedVariations.add([]);
           for(int i=0; i < item.foodVariations[index].variationValues.length; i++) {
             _selectedVariations[index].add(false);

@@ -30,6 +30,8 @@ import 'package:sixam_mart/view/screens/cart/widget/cart_item_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../data/model/response/cart_model.dart';
+import '../../../data/model/response/item_model.dart';
+import '../../../helper/date_converter.dart';
 
 class CartScreen extends StatefulWidget {
   final fromNav;
@@ -51,31 +53,31 @@ class _CartScreenState extends State<CartScreen> {
       endDrawerEnableOpenDragGesture: false,
       body: GetBuilder<CartController>(
         builder: (cartController) {
-          // List<List<AddOns>> _addOnsList = [];
-          // List<bool> _availableList = [];
-          // double _itemPrice = 0;
-          // double _addOns = 0;
-          // cartController.cartList.forEach((cartModel) {
-          //
-          //   List<AddOns> _addOnList = [];
-          //   cartModel.addOnIds.forEach((addOnId) {
-          //     for(AddOns addOns in cartModel.item.addOns) {
-          //       if(addOns.id == addOnId.id) {
-          //         _addOnList.add(addOns);
-          //         break;
-          //       }
-          //     }
-          //   });
-          //   _addOnsList.add(_addOnList);
-          //
-          //   _availableList.add(DateConverter.isAvailable(cartModel.item.availableTimeStarts, cartModel.item.availableTimeEnds));
-          //
-          //   for(int index=0; index<_addOnList.length; index++) {
-          //     _addOns = _addOns + (_addOnList[index].price * cartModel.addOnIds[index].quantity);
-          //   }
-          //   _itemPrice = _itemPrice + (cartModel.price * cartModel.quantity);
-          // });
-          // double _subTotal = _itemPrice + _addOns;
+          List<List<AddOns>> _addOnsList = [];
+          List<bool> _availableList = [];
+          double _itemPrice = 0;
+          double _addOns = 0;
+          cartController.cartList.forEach((cartModel) {
+
+            List<AddOns> _addOnList = [];
+            cartModel.addOnIds.forEach((addOnId) {
+              for(AddOns addOns in cartModel.item.addOns) {
+                if(addOns.id == addOnId.id) {
+                  _addOnList.add(addOns);
+                  break;
+                }
+              }
+            });
+            _addOnsList.add(_addOnList);
+
+            _availableList.add(DateConverter.isAvailable(cartModel.item.availableTimeStarts, cartModel.item.availableTimeEnds));
+
+            for(int index=0; index<_addOnList.length; index++) {
+              _addOns = _addOns + (_addOnList[index].price * cartModel.addOnIds[index].quantity);
+            }
+            _itemPrice = _itemPrice + (cartModel.price * cartModel.quantity);
+          });
+          double _subTotal = _itemPrice + _addOns;
 
           return cartController.cartList.length > 0
               ? Column(

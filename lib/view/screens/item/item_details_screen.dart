@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:universal_html/html.dart' as html;
@@ -44,7 +45,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
     super.initState();
    debugPrint("name of item is ${widget.item.id}");
 
-    if(GetPlatform.isWeb){
+    if(kIsWeb){
       String urlString = html.window.location.href;
       Uri uri = Uri.parse(urlString);
       String itemId = uri.queryParameters['id'];
@@ -67,6 +68,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
         CartModel _cartModel;
         double _priceWithAddons = 0;
         if(itemController.item != null && itemController.variationIndex != null){
+
           List<String> _variationList = [];
           for (int index = 0; index < itemController.item.choiceOptions.length; index++) {
             _variationList.add(itemController.item.choiceOptions[index].options[itemController.variationIndex[index]].replaceAll(' ', ''));
